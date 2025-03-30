@@ -13,19 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 //lister tout les taches
-app.get('/tasks', async (req, res) => {
-    try {
-        const tasks = await Task.find();
-        return res.status(200).json({ data: tasks })
-    } catch (error) { res.status(404).json({ message: "error" }) }
-})
-//lister une tache specifique
-app.get('/tasks/:id', async (req, res) => {
-    try {
-        const selectedOne = await Task.findById(req.params.id);
-        return res.status(200).json({ data: selectedOne })
-    } catch (error) { res.status(404).json({ message: "task was not Found" }) }
-})
+
 //get all project tasks
 app.get('/projects/:id/tasks', async (req, res) => {
     const id = req.params.id;
