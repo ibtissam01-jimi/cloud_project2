@@ -2,10 +2,11 @@ const express = require("express");
 const router = express.Router();
 const Project = require("../models/Project");
 
-// Importation du middleware 
+
 const authMiddleware = require("../../auth/middleware/auth");
 
 // Ajouter un projet (authentifié)
+// post http://localhost:5000/api/projects/
 router.post("/", authMiddleware(["admin", "user"]), async (req, res) => {
   try {
     const newProject = new Project(req.body);
@@ -17,6 +18,7 @@ router.post("/", authMiddleware(["admin", "user"]), async (req, res) => {
 });
 
 //Récupérer tous les projets
+// get http://localhost:5000/api/projects/
 router.get("/", async (req, res) => {
   try {
     const projects = await Project.find().populate("category");
@@ -27,6 +29,9 @@ router.get("/", async (req, res) => {
 });
 
 
+
+
+//http://localhost:5000/api/projects/filtrer?name=nom_du_projet&startDate=2024-03-01&endDate=2024-03-30&status=En%20cours&category=65f07d8e1a2b4c001c3e2f4a
 
 router.get("/filtrer", async (req, res) => {
   try {
@@ -51,7 +56,11 @@ router.get("/filtrer", async (req, res) => {
   }
 });
 
+
+
+
 //Récupérer un projet par ID
+// get http://localhost:5000/api/projects/67e8872d3a715f15db65dd96 =>stagaire 
 router.get("/:id", async (req, res) => {
   try {
     const project = await Project.findById(req.params.id).populate("category");
@@ -65,6 +74,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //Modifier un projet (authentifié)
+// put http://localhost:5000/api/projects/67e8872d3a715f15db65dd96 modifier  gestion stagaire en formateur
 router.put("/:id", authMiddleware(["admin"]), async (req, res) => {
   try {
     const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate("category");
@@ -78,6 +88,7 @@ router.put("/:id", authMiddleware(["admin"]), async (req, res) => {
 });
 
 //Supprimer un projet (authentifié)
+// supprimer http://localhost:5000/api/projects/67e8872d3a715f15db65dd96
 router.delete("/:id", authMiddleware(["admin"]), async (req, res) => {
   try {
     const project = await Project.findByIdAndDelete(req.params.id);
@@ -91,6 +102,8 @@ router.delete("/:id", authMiddleware(["admin"]), async (req, res) => {
 });
 
 // Assigner une catégorie à un projet
+// put http://localhost:5000/api/projects/67e8872d3a715f15db65dd96/category et passer dans body
+
 router.put("/:id/category", authMiddleware(["admin", "user"]), async (req, res) => {
   try {
     const { category } = req.body;

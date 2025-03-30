@@ -6,7 +6,7 @@ const { check, validationResult } = require("express-validator");
 const authMiddleware = require("../middleware/auth");
 
 const router = express.Router();
-
+//http://localhost:5002/api/auth/register
 router.post(
   "/register",
   [
@@ -38,6 +38,8 @@ router.post(
   }
 );
 
+
+//http://localhost:5002/api/auth/login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -52,6 +54,7 @@ router.post("/login", async (req, res) => {
 });
 
 // Récupérer les users
+//http://localhost:5002/api/auth/
 router.get("/", authMiddleware(["admin"]), async (req, res) => {
   const { search } = req.query;
   const query = search
@@ -63,7 +66,7 @@ router.get("/", authMiddleware(["admin"]), async (req, res) => {
 
 
 
-
+//http://localhost:5002/api/auth/search?search=btissam
 router.get("/search", async (req, res) => {
   const { search } = req.query;
 
@@ -87,12 +90,17 @@ router.get("/search", async (req, res) => {
 });
 
 // Récupérer un user par ID
+
+//http://localhost:5002/api/auth/id
 router.get("/:id", authMiddleware(["admin"]), async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).json({ msg: "Utilisateur non trouvé" });
   res.json(user);
 });
 
+
+
+//put http://localhost:5002/api/auth/id
 // Modifier utilisateur (admin uniquement)
 router.put("/:id", authMiddleware(["admin"]), async (req, res) => {
   const { username, email, role, isBlocked } = req.body;
@@ -108,6 +116,8 @@ router.put("/:id", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
+
+//delete http://localhost:5002/api/auth/id
 // Suppression utilisateur (admin uniquement)
 router.delete("/:id", authMiddleware(["admin"]), async (req, res) => {
   try {
@@ -118,7 +128,7 @@ router.delete("/:id", authMiddleware(["admin"]), async (req, res) => {
   }
 });
 
-
+//put http://localhost:5002/api/auth/block/id
 // Déblocage utilisateur (admin uniquement)
 router.put("/unblock/:id", authMiddleware(["admin"]), async (req, res) => {
     const user = await User.findById(req.params.id);
@@ -147,14 +157,6 @@ router.put("/block/:id", authMiddleware(["admin"]), async (req, res) => {
     await user.save();
     res.json({ msg: "Utilisateur bloqué !" });
 });
-
-
-
-
-
-
-
-
 
 
 module.exports=router

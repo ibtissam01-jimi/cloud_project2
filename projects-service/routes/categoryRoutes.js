@@ -6,6 +6,7 @@ const Category = require("../models/Category");
 const authMiddleware = require("../../auth/middleware/auth");
 
 //  Ajouter une catégorie (authentifié)
+//post http://localhost:5000/api/categories
 router.post("/", authMiddleware(["admin"]), async (req, res) => {
   try {
     const newCategory = new Category(req.body);
@@ -17,6 +18,7 @@ router.post("/", authMiddleware(["admin"]), async (req, res) => {
 });
 
 // Récupérer toutes les catégories
+// get http://localhost:5000/api/categories
 router.get("/", async (req, res) => {
   try {
     const categories = await Category.find();
@@ -27,6 +29,7 @@ router.get("/", async (req, res) => {
 });
 
 // Supprimer une catégorie (authentifié)
+// delete http://localhost:5000/api/categories/id
 router.delete("/:id", authMiddleware(["admin"]), async (req, res) => {
   try {
     const category = await Category.findByIdAndDelete(req.params.id);
