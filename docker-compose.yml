@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+  auth:
+    build: ./auth
+    ports:
+      - "5002:5002" 
+    depends_on:
+      - database
+    environment:
+      - DB_URL=mongodb://database:27017/projectDB
+
+  projectS-service:
+    build: ./projects-service
+    ports:
+      - "5000:5000" 
+    depends_on:
+      - database
+    environment:
+      - DB_URL=mongodb://database:27017/projectsDB
+
+  taskS-service:
+    build: ./tasks-service
+    ports:
+      - "5409:5409"  
+    depends_on:
+      - database
+    environment:
+      - DB_URL=mongodb://database:27017/tasksDB
+
+  collaboration-service:
+    build: ./collaboration-service
+    ports:
+      - "5004:5004"  
+    depends_on:
+      - database
+    environment:
+      - DB_URL=mongodb://database:27017/collaboration_service
+
+  rapport-service:  #aya changer hada 
+    build: ./rapport-service
+    ports:
+      - "5004:5004"  #hnaya
+    depends_on:
+      - database
+    environment:
+      - DB_URL=mongodb://database:27017/rapportdb  #hnaya 
+
+  database:
+    image: mongo 
+    container_name: database
+    ports:
+      - "27017:27017"  
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data:
