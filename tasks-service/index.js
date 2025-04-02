@@ -13,19 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 //lister tout les taches
-app.get('/tasks', async (req, res) => {
-    try {
-        const tasks = await Task.find();
-        return res.status(200).json({ data: tasks })
-    } catch (error) { res.status(404).json({ message: "error" }) }
-})
-//lister une tache specifique
-app.get('/tasks/:id', async (req, res) => {
-    try {
-        const selectedOne = await Task.findById(req.params.id);
-        return res.status(200).json({ data: selectedOne })
-    } catch (error) { res.status(404).json({ message: "task was not Found" }) }
-})
+
 //get all project tasks
 app.get('/projects/:id/tasks', async (req, res) => {
     const id = req.params.id;
@@ -112,23 +100,23 @@ app.get('/projects/:id/tasks/:taskId/comments', async (req, res) => {
     try {
 
         const comments = await Comment.find({ task_id: taskId }).populate('user_id');
-        return res.status(200).json({comment: comments });
+        return res.status(200).json({ comment: comments });
     } catch (err) {
         return res.status(404).json({ message: 'task not found' });
     }
 
 })
 //ajouter un commentaire pour une tache
-app.post('/tasks/:id/comment', async (req, res) => {
-    const id = req.params.id;
-    const { comment } = req.body;
-    const task = Task.findById(id);
+app.post('/projects/:id/tasks/:taskId/comment', async (req, res) => {
+    const {id,taskId} = req.params;
+    const { userId,comment } = req.body;
+    const task = Task.findById(taskId);
     //normalement user_id doit etre prend du service auth
-    const user_id = 'ljkhsdfjidkh125648';
-    if (task && user_id) {
+    const user_id = '00ef13a56daea143dc';
+    if (task && userId) {
         const newComment = new Comment({
             user_id: user_id,
-            task_id: id,
+            task_id: taskId,
             comment: comment
         })
         newComment.save();
@@ -139,16 +127,22 @@ app.post('/tasks/:id/comment', async (req, res) => {
 });
 
 //affectation d'un utilisateur a une tache
-app.post('/tasks/:id/assign', async (req, res) => {
-    const id = req.params.id;
-    //const {user_id} = req.body;
-    const user_id = 'ljkhsdfjidkh125648';
-    const task = await Task.findById(id);
-    if (!task) return res.status(404).json({ message: 'selected task does not exist' })
-    //apres le service auth etre complete
-    //const userResponse = axios.get(`http://127.168.0.1:5002/users/${user_id}`);
-    //if(userResponse.status !== 200) return res.status(404).json({message:'user does not exist'});
-    console.log(task)
+app.post('/projects/:id/tasks/:taskId/assign/:userId', async (req, res) => {
+    const { taskId, userId } = req.params;
+    const user_id = '00ef13a56daea143dc';
+    const task = await Task.findById(taskId);
+    if (!task) return res.status(404).json({ message: 'selected task not exist' })
+    if (!userId) return res.status(404).json({ message: 'user is required' })
+
+    try {
+        // const userResponse = axios.get(`http://127.168.0.1:5002/users/${user_id}`);
+        // if (userResponse.status !== 200) {
+        //     return res.status(404).json({ message: "User not exist" });
+        // }
+    } catch (err) {
+        return res.status(404).json({ message: err });
+    }
+    task.users = userId;
     task.save();
     return res.status(200).json({ message: 'task assigned to user' });
 })
